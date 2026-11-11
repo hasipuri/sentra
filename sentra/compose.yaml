@@ -1,0 +1,44 @@
+name: sentra
+x-app: &app
+  build: .
+  environment:
+    DATABASE_URL: postgresql://sentra:sentra@postgres/sentra
+    BROKER_URL: amqp://sentra:sentra@rabbitmq:5672//
+    REDIS_URL: redis://redis:6379/0
+  depends_on:
+    postgres: {condition: service_healthy}
+    rabbitmq: {condition: service_healthy}
+    redis: {condition: service_healthy}
+services:
+  api:
+    <<: *app
+    ports: ["127.0.0.1:8765:8765"]
+  worker:
+    <<: *app
+    command: ["celery", "-A", "worker:app", "worker", "--loglevel=INFO", "--concurrency=2"]
+  postgres:
+    image: postgres:16-alpine
+    environment: {POSTGRES_DB: sentra, POSTGRES_USER: sentra, POSTGRES_PASSWORD: sentra}
+    volumes: ["reports:/var/lib/postgresql/data"]
+    healthcheck: {test: ["CMD", "pg_isready", "-U", "sentra"], interval: 5s, timeout: 3s, retries: 20}
+  redis:
+    image: redis:7-alpine
+    healthcheck: {test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 20}
+  rabbitmq:
+    image: rabbitmq:4-alpine
+    environment: {RABBITMQ_DEFAULT_USER: sentra, RABBITMQ_DEFAULT_PASS: sentra}
+    healthcheck: {test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"], interval: 5s, timeout: 8s, retries: 20}
+  kafka:
+    image: apache/kafka:3.9.1
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+volumes:
+  reports:
+
