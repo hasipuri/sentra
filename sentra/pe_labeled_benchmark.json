@@ -1,0 +1,75 @@
+{
+  "weeks": [
+    "2024-09-22_2024-09-28_Dot_Net_test.jsonl",
+    "2024-09-29_2024-10-05_Dot_Net_test.jsonl",
+    "2024-10-06_2024-10-12_Dot_Net_test.jsonl",
+    "2024-10-13_2024-10-19_Dot_Net_test.jsonl",
+    "2024-10-20_2024-10-26_Dot_Net_test.jsonl",
+    "2024-10-27_2024-11-02_Dot_Net_test.jsonl",
+    "2024-11-03_2024-11-09_Dot_Net_test.jsonl",
+    "2024-11-10_2024-11-16_Dot_Net_test.jsonl",
+    "2024-11-17_2024-11-23_Dot_Net_test.jsonl",
+    "2024-11-24_2024-11-30_Dot_Net_test.jsonl",
+    "2024-12-01_2024-12-07_Dot_Net_test.jsonl",
+    "2024-12-08_2024-12-14_Dot_Net_test.jsonl"
+  ],
+  "calibration_rows": 3073,
+  "test_rows": 3022,
+  "excluded_headers": 0,
+  "sample": "first SHA-256 byte < 24",
+  "validation_fpr_budget": 0.05,
+  "sentra": {
+    "threshold": 27.200000000000003,
+    "validation": {
+      "positive": 1443,
+      "negative": 1630,
+      "tp_range": [
+        721,
+        764
+      ],
+      "fp_range": [
+        63,
+        80
+      ]
+    },
+    "test": {
+      "positive": 1480,
+      "negative": 1542,
+      "tp_range": [
+        747,
+        798
+      ],
+      "fp_range": [
+        60,
+        76
+      ]
+    }
+  },
+  "ember": {
+    "threshold": 0.219110908899467,
+    "validation": {
+      "positive": 1443,
+      "negative": 1630,
+      "tp_range": [
+        1430,
+        1430
+      ],
+      "fp_range": [
+        81,
+        81
+      ]
+    },
+    "test": {
+      "positive": 1480,
+      "negative": 1542,
+      "tp_range": [
+        1468,
+        1468
+      ],
+      "fp_range": [
+        91,
+        91
+      ]
+    }
+  }
+}

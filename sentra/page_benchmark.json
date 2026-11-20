@@ -1,0 +1,227 @@
+{
+  "source": "phreshphish/phreshphish@eca603e",
+  "files": {
+    "train": [
+      "sentra-train-000.parquet",
+      "sentra-train-001.parquet"
+    ],
+    "test": [
+      "sentra-test-000.parquet",
+      "sentra-test-001.parquet"
+    ]
+  },
+  "exclusions": {
+    "development": {
+      "read": 6780,
+      "size_or_empty": 400,
+      "duplicate": 212,
+      "unusable": 4
+    },
+    "test": {
+      "read": 6236,
+      "size_or_empty": 423,
+      "known_domain": 924,
+      "duplicate": 625,
+      "unusable": 7
+    }
+  },
+  "budgets": {
+    "high": 0.01,
+    "medium": 0.04
+  },
+  "arms": {
+    "v2": {
+      "threshold": 86.8,
+      "medium": 61.7,
+      "validation": {
+        "tp": 131,
+        "fp": 8,
+        "fn": 624,
+        "tn": 793
+      },
+      "test": {
+        "tp": 201,
+        "fp": 31,
+        "fn": 1828,
+        "tn": 2197
+      },
+      "validation_medium": {
+        "tp": 338,
+        "fp": 32,
+        "fn": 417,
+        "tn": 769
+      },
+      "test_medium": {
+        "tp": 560,
+        "fp": 114,
+        "fn": 1469,
+        "tn": 2114
+      },
+      "benign_password_pages": {
+        "rows": 169,
+        "fp": 10
+      }
+    },
+    "url": {
+      "threshold": 83.6,
+      "medium": 68.4,
+      "validation": {
+        "tp": 354,
+        "fp": 8,
+        "fn": 401,
+        "tn": 793
+      },
+      "test": {
+        "tp": 981,
+        "fp": 65,
+        "fn": 1048,
+        "tn": 2163
+      },
+      "validation_medium": {
+        "tp": 491,
+        "fp": 32,
+        "fn": 264,
+        "tn": 769
+      },
+      "test_medium": {
+        "tp": 1399,
+        "fp": 173,
+        "fn": 630,
+        "tn": 2055
+      },
+      "benign_password_pages": {
+        "rows": 169,
+        "fp": 9
+      }
+    },
+    "url_brand": {
+      "threshold": 83.5,
+      "medium": 65.8,
+      "validation": {
+        "tp": 359,
+        "fp": 8,
+        "fn": 396,
+        "tn": 793
+      },
+      "test": {
+        "tp": 1024,
+        "fp": 58,
+        "fn": 1005,
+        "tn": 2170
+      },
+      "validation_medium": {
+        "tp": 487,
+        "fp": 32,
+        "fn": 268,
+        "tn": 769
+      },
+      "test_medium": {
+        "tp": 1472,
+        "fp": 190,
+        "fn": 557,
+        "tn": 2038
+      },
+      "benign_password_pages": {
+        "rows": 169,
+        "fp": 8
+      }
+    },
+    "url_brand_html": {
+      "threshold": 82.6,
+      "medium": 67.9,
+      "validation": {
+        "tp": 319,
+        "fp": 8,
+        "fn": 436,
+        "tn": 793
+      },
+      "test": {
+        "tp": 933,
+        "fp": 59,
+        "fn": 1096,
+        "tn": 2169
+      },
+      "validation_medium": {
+        "tp": 439,
+        "fp": 31,
+        "fn": 316,
+        "tn": 770
+      },
+      "test_medium": {
+        "tp": 1420,
+        "fp": 179,
+        "fn": 609,
+        "tn": 2049
+      },
+      "benign_password_pages": {
+        "rows": 169,
+        "fp": 5
+      }
+    }
+  },
+  "train": {
+    "rows": 4608,
+    "positives": 1985,
+    "domains": 3446
+  },
+  "validation": {
+    "rows": 1556,
+    "positives": 755,
+    "domains": 896
+  },
+  "test": {
+    "rows": 4257,
+    "positives": 2029,
+    "domains": 3673
+  },
+  "v2_deployed_threshold": {
+    "tp": 692,
+    "fp": 157,
+    "fn": 1337,
+    "tn": 2071
+  },
+  "external_at_deployed_thresholds": {
+    "GramBeddings": {
+      "v2": {
+        "tp": 23712,
+        "fp": 851,
+        "tn": 24171,
+        "fn": 2539
+      },
+      "url_brand": {
+        "tp": 10611,
+        "fp": 887,
+        "tn": 24135,
+        "fn": 15640
+      }
+    },
+    "Ebbu2017": {
+      "v2": {
+        "tp": 18889,
+        "fp": 666,
+        "tn": 19439,
+        "fn": 4836
+      },
+      "url_brand": {
+        "tp": 4256,
+        "fp": 200,
+        "tn": 19905,
+        "fn": 19469
+      }
+    },
+    "Ebbu2017_benign_login_terms": {
+      "v2": {
+        "tp": 0,
+        "fp": 91,
+        "tn": 216,
+        "fn": 0
+      },
+      "url_brand": {
+        "tp": 0,
+        "fp": 7,
+        "tn": 300,
+        "fn": 0
+      }
+    }
+  }
+}

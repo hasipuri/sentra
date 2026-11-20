@@ -3,12 +3,11 @@ import logging
 import os
 import re
 import uuid
-from contextlib import closing
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlsplit
-from detector import ROOT, models, pe_features, url_features
-from service import TABLE, analyze, connect, history, store
+from detector import ROOT, models, pe_features, scan_brand_features, scan_url_features
+from service import analyze, history, initialize, store
 
 LIMIT = 10 * 1024 * 1024
 ASSETS = {'/': ('index.html', 'text/html'), '/style.css': ('style.css', 'text/css'),
@@ -38,7 +37,7 @@ class Handler(BaseHTTPRequestHandler):
             name, mime = ASSETS[path]
             return self.reply(200, (ROOT / 'web' / name).read_bytes(), mime)
         if path == '/api/models':
-            return self.reply(200, {k:{a:b for a,b in v.items() if a != 'trees'} for k,v in models().items()})
+            return self.reply(200, {k:{a:b for a,b in v.items() if a not in ('trees', 'lexical')} for k,v in models().items()})
         if path == '/api/scans':
             try:
                 return self.reply(200, history())
@@ -51,7 +50,8 @@ class Handler(BaseHTTPRequestHandler):
         if self.path not in ('/api/scans/url', '/api/scans/file'):
             return self.reply(404, {'error': 'Ресурс не найден.'})
         kind = self.path.rsplit('/', 1)[1]
-        if self.headers.get_content_type() != ('application/json' if kind == 'url' else 'application/octet-stream'):
+        model_key = kind
+        if self.headers.get_content_type() != ('application/octet-stream' if kind == 'file' else 'application/json'):
             return self.reply(415, {'error': 'Неподдерживаемый тип данных.'})
         try:
             length = int(self.headers.get('Content-Length', 0))
@@ -65,16 +65,23 @@ class Handler(BaseHTTPRequestHandler):
             if kind == 'url':
                 payload = json.loads(data)
                 url = payload.get('url') if isinstance(payload, dict) else None
-                features = url_features(url)
+                profile = payload.get('profile', 'default') if isinstance(payload, dict) else 'default'
+                if profile not in ('default', 'brand'):
+                    return self.reply(400, {'error': 'Неизвестный профиль URL-модели.'})
+                model_key = 'url_brand' if profile == 'brand' else 'url'
+                features = scan_brand_features(url) if profile == 'brand' else scan_url_features(url)
                 name = urlsplit(url if '://' in url else 'https://' + url).hostname
             else:
                 features = pe_features(data)
                 name = re.split(r'[/\\]', unquote(self.headers.get('X-File-Name', 'sample.exe')))[-1][:180] or 'sample.exe'
         except (ValueError, UnicodeError, RecursionError):
-            return self.reply(400, {'error': 'Проверьте адрес сайта.' if kind == 'url' else 'Загрузите корректный файл Windows PE (.exe или .dll).'})
+            errors = {'url': 'Проверьте адрес сайта.',
+                      'file': 'Загрузите корректный файл Windows PE (.exe или .dll).'}
+            return self.reply(400, {'error': errors[kind]})
         try:
-            result = analyze(kind, features)
-            result.update(kind=kind, name=name, id=uuid.uuid4().hex,
+            scan_id = uuid.uuid4().hex
+            result = analyze(scan_id, model_key, features)
+            result.update(kind=kind, name=name, id=scan_id,
                           created=datetime.now(timezone.utc).isoformat())
             store(result)
         except Exception:
@@ -85,8 +92,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == '__main__':
     models()
-    with closing(connect()) as db, db:
-        db.execute(TABLE)
+    initialize()
     host, port = os.getenv('HOST', '127.0.0.1'), int(os.getenv('PORT', '8765'))
     print('Sentra http://' + host + ':' + str(port), flush=True)
     ThreadingHTTPServer((host, port), Handler).serve_forever()

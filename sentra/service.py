@@ -19,17 +19,15 @@ def connect():
     return sqlite3.connect(path, timeout=8)
 
 
+def initialize():
+    with closing(connect()) as db, db:
+        db.execute(TABLE)
+
+
 def store(report):
     params = '%s,%s,%s' if DISTRIBUTED else '?,?,?'
     with closing(connect()) as db, db:
         db.execute('INSERT INTO scans VALUES (' + params + ')', (report['id'], report['created'], json.dumps(report)))
-    if DISTRIBUTED:
-        from worker import emit_event
-        try:
-            emit_event.apply_async(args=[report['id'], report['kind'], report['level']], retry=False)
-        except Exception:
-            import logging
-            logging.exception('Audit event could not be queued')
 
 
 def history():
@@ -37,8 +35,8 @@ def history():
         return [json.loads(r[0]) for r in db.execute('SELECT report FROM scans ORDER BY created DESC LIMIT 100').fetchall()]
 
 
-def analyze(kind, features):
+def analyze(scan_id, kind, features):
     if DISTRIBUTED:
         from worker import analyze_job
-        return analyze_job.delay(kind, features).get(timeout=20)
+        return analyze_job.apply_async(args=(kind, features), task_id=scan_id).get(timeout=20)
     return classify(kind, features)

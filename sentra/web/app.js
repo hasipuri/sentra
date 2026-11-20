@@ -20,19 +20,27 @@ function select(k){
  kind=k; const url=k==='url'; $('urlBox').hidden=!url; $('fileBox').hidden=url;
  $('urlTab').setAttribute('aria-pressed',url); $('fileTab').setAttribute('aria-pressed',!url);
  $('submit').children[1].textContent=url?'Проверить ссылку':'Проверить файл';
- $('detector').textContent=url?'Фишинговые сайты':'Вредоносное ПО'; $('dataset').textContent=url?'PhiUSIIL':'ClaMP';
+ $('detector').textContent=url?'Фишинговые сайты':'Вредоносное ПО'; $('dataset').textContent=url?'GramBeddings':'ClaMP';
+ $('method').textContent=url?'Лес и фрагменты URL':'Случайный лес';
+ if(url && $('urlProfile').value==='brand'){
+  $('dataset').textContent='PhreshPhish';
+  $('method').textContent='Случайный лес с признаками брендов';
+ }
  $('note').textContent=url?'Анализируется структура URL без перехода на сайт.':'Анализируются заголовки PE без запуска файла.';
  $('error').textContent='';$('report').hidden=true;
 }
 $('urlTab').onclick=()=>select('url'); $('fileTab').onclick=()=>select('file');
+$('urlProfile').onchange=()=>select('url');
 async function api(path,options){
  const response=await fetch(path,options);
  const data=await response.json(); if(!response.ok)throw Error(data.error || 'Ошибка сервера.');
  return data;
 }
 function showReport(box,row){
+ const explanation=row.model_version==='url-brand-v1'?'Модель учитывает фрагменты адреса и расположение названий брендов.':
+  (row.kind==='url'?'Учитывается только структура адреса.':'Учитываются только заголовки PE.');
  box.replaceChildren(el('h3',row.name),el('span',levels[row.level],'risk '+row.level),
- el('p','Оценка модели: '+row.score+' из 100. '+(row.kind==='url'?'Учитывается только структура адреса.':'Учитываются только заголовки PE.')));
+ el('p','Оценка модели '+(row.model_version || 'v1')+': '+row.score+' из 100. '+explanation));
  const details=el('details'); details.append(el('summary','Признаки объекта'));
  const grid=el('dl',undefined,'detailgrid'); for(const [key,value] of Object.entries(row.features))grid.append(el('dt',key),el('dd',value));
  details.append(grid);box.append(details);
@@ -57,14 +65,14 @@ $('form').onsubmit=async event=>{
  $('error').textContent='';$('report').hidden=true;
  if(url&&!address || !url&&!file){$(url?'url':'file').focus();$('error').textContent=url?'Введите адрес сайта.':'Выберите файл.';return;}
  if(!url&&file.size>10*1024*1024){$('error').textContent='Допустимый размер файла — до 10 МБ.';return;}
- busy=true; for(const id of ['submit','urlTab','fileTab'])$(id).disabled=true;
+ busy=true; for(const id of ['submit','urlTab','fileTab','urlProfile'])$(id).disabled=true;
  $('submit').children[1].textContent='Анализируем…';
  try {
   const headers=url?{'Content-Type':'application/json'}:{'Content-Type':'application/octet-stream','X-File-Name':encodeURIComponent(file.name)};
-  const row=await api('/api/scans/'+kind,{method:'POST',headers,body:url?JSON.stringify({url:address}):file});
+  const row=await api('/api/scans/'+kind,{method:'POST',headers,body:url?JSON.stringify({url:address,profile:$('urlProfile').value}):file});
   showReport($('report'),row);$('report').hidden=false;$('report').focus();await refresh();
  }catch(e){$('error').textContent=e.message;}
- finally{busy=false;for(const id of ['submit','urlTab','fileTab'])$(id).disabled=false;$('submit').children[1].textContent=url?'Проверить ссылку':'Проверить файл';}
+ finally{busy=false;for(const id of ['submit','urlTab','fileTab','urlProfile'])$(id).disabled=false;$('submit').children[1].textContent=url?'Проверить ссылку':'Проверить файл';}
 };
 async function route(){
  const view=['history','models'].includes(location.hash.slice(1))?location.hash.slice(1):'scanner';
@@ -72,10 +80,11 @@ async function route(){
  document.querySelectorAll('nav a').forEach(n=>{if(n.hash==='#'+view)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});
  if(view==='models'){
   try{const data=await api('/api/models');$('metrics').replaceChildren();
-   for(const k of ['url','file']){const m=data[k],card=el('article');
-    card.append(el('h3',k==='url'?'Ссылки · PhiUSIIL':'Файлы · ClaMP'),el('p','Обучение: '+m.train.toLocaleString('ru-RU')+' · Тест: '+m.test.toLocaleString('ru-RU')),
+   const titles={url:'Ссылки · GramBeddings',url_brand:'Бренды в URL · PhreshPhish',file:'Файлы · ClaMP'};
+   for(const k of Object.keys(titles)){const m=data[k],card=el('article');
+    card.append(el('h3',titles[k]),el('p','Обучение: '+m.train.toLocaleString('ru-RU')+' · Тест: '+m.test.toLocaleString('ru-RU')),
     el('p','Полнота: '+(100*m.tp/(m.tp+m.fn)).toFixed(1)+'% · Точность (precision): '+(100*m.tp/(m.tp+m.fp)).toFixed(1)+'%'),
-    el('small','Ложных тревог: '+m.fp+' · Пропущено угроз: '+m.fn));$('metrics').append(card);}
+    el('p','Порог высокого риска: '+m.threshold+' из 100.'),el('small','Ложные тревоги на 1 000 легитимных объектов: '+(1000*m.fp/(m.fp+m.tn)).toFixed(1)+' · Пропущено угроз: '+m.fn));$('metrics').append(card);}
   }catch{$('metrics').textContent='Не удалось загрузить метрики.';}
  }else await refresh();
 }

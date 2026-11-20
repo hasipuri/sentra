@@ -1,0 +1,395 @@
+{
+  "files": 64,
+  "sentra_threshold": 41,
+  "ember_threshold": 0.5,
+  "sentra_high": 0,
+  "ember_high": 0,
+  "extractor_sha256": "58a085e9ad307aa2c52e165985ff80db8fd5b763891c0cba2d1758a4825f7273",
+  "model_sha256": "4252027863492ac138785c8c18576f43dad77d00faddc14e8c0072e8db419f99",
+  "items": [
+    {
+      "name": "winrnr.dll",
+      "sha256": "00069e41c7b862de00f781c83d912d343a202fce5e41e424b843d689ef70d230",
+      "sentra": 13.8,
+      "ember": 0.0002012572384723651
+    },
+    {
+      "name": "dpapisrv.dll",
+      "sha256": "000aa3511978c0dcf3146cebd9fcc937fd883024d2c875a8b609b099219b28cb",
+      "sentra": 14.6,
+      "ember": 0.00010054511148771261
+    },
+    {
+      "name": "Microsoft-Windows-Internal-Shell-NearShareExperience.dll",
+      "sha256": "0043bd569691d51e02d793145e7301b98e8ef41f41c82365309b0e7ae505bd1d",
+      "sentra": 13.8,
+      "ember": 0.00012130092879450461
+    },
+    {
+      "name": "kdcom.dll",
+      "sha256": "0056be0d7a108d2f5ce402755695e7f6ee807f6869bb98f4d45ffa7cddd8b154",
+      "sentra": 14.3,
+      "ember": 0.0015336498812640693
+    },
+    {
+      "name": "PrintPlatformConfig.dll",
+      "sha256": "00581296bad64855ddec3f028abcab429acec056ebadbcfce30264a37e06d71f",
+      "sentra": 15.1,
+      "ember": 0.00018896859509689442
+    },
+    {
+      "name": "aclui.dll",
+      "sha256": "0071fda21269601f2902be64b54b4f271b60e90271e4d5ca0d640b61c748ffbd",
+      "sentra": 13.8,
+      "ember": 0.0005648111820586261
+    },
+    {
+      "name": "popkeycli.dll",
+      "sha256": "00a8aa873745f5e5b5e7bba2633f84e3dcb47f604d09291a98c10e50fb708aa3",
+      "sentra": 12.8,
+      "ember": 0.00013263617877505254
+    },
+    {
+      "name": "gpprnext.dll",
+      "sha256": "00aa3be54b87462a74b2ea763d7b3e132fcc33c75ca659f785a15c53ba771dd7",
+      "sentra": 14.1,
+      "ember": 0.00038605913258127453
+    },
+    {
+      "name": "loghours.dll",
+      "sha256": "00bc1f6843c6a6e86dae5f6abe58755606accad19ca4edb324ed9eb421851e28",
+      "sentra": 17.6,
+      "ember": 0.0002914093304484686
+    },
+    {
+      "name": "ssdpsrv.dll",
+      "sha256": "00ca9bf302d474c138154f7aa96c1da959b5891cf43a35ddf8f683c9e6a43795",
+      "sentra": 14.6,
+      "ember": 0.001744034051760733
+    },
+    {
+      "name": "wpnprv.dll",
+      "sha256": "00cc746bee33af5e957aefccbdaf4ce0fbd713420774544d08583a3bd78a501b",
+      "sentra": 13.8,
+      "ember": 0.00018258000940343306
+    },
+    {
+      "name": "KBDFR.DLL",
+      "sha256": "01043070ee3a81ba51b31c4c9c60cce69891e271503054abefb14b6e9fdb1b0e",
+      "sentra": 12.7,
+      "ember": 0.0004332120289936393
+    },
+    {
+      "name": "rastapi.dll",
+      "sha256": "01061012d93426d8094e797a93c8ec7b04d203e5e921ae3b7de0134e69382fe9",
+      "sentra": 16.8,
+      "ember": 0.00024166971294013308
+    },
+    {
+      "name": "PresentationHost.exe",
+      "sha256": "0111d485351ef0deffd9403a0f8e123759a04a928fbd055b901de18164c4fa39",
+      "sentra": 15.6,
+      "ember": 0.06877892969704803
+    },
+    {
+      "name": "miguiresource.dll",
+      "sha256": "011e784f27377d528c52e9f23d05fd8be415e4030ae4ea7ba564dbe4056c9109",
+      "sentra": 19.2,
+      "ember": 0.020991369532633097
+    },
+    {
+      "name": "dispdiag.exe",
+      "sha256": "0129ab3ad337352d1d58a6145d2a110499ff88c8a482348653f2066dcfb0f74a",
+      "sentra": 15.6,
+      "ember": 0.0005425695979722932
+    },
+    {
+      "name": "rdbui.dll",
+      "sha256": "012b4acb5dae31517d2aa91eb1baf5a8ef75d8a561cffc7d870c462c48196426",
+      "sentra": 13.8,
+      "ember": 0.0026249159066776204
+    },
+    {
+      "name": "PerformanceTraceHandler.dll",
+      "sha256": "014366d02005590af078de8dff4af26fa83b0089ea2e503f00f1c67549e851f5",
+      "sentra": 14.1,
+      "ember": 0.00018614633537098466
+    },
+    {
+      "name": "vmbuspiper.dll",
+      "sha256": "01482182b486c020ef55226b42ae20a9c0b6d7981480317966aa1003a472b292",
+      "sentra": 12.6,
+      "ember": 0.0010408742148454845
+    },
+    {
+      "name": "eappgnui.dll",
+      "sha256": "016761178def4c5b1f8f8e370f0da6d3daf7eb578725b5397ca8c6a886b5525d",
+      "sentra": 24.0,
+      "ember": 0.002765354550666562
+    },
+    {
+      "name": "DafGip.dll",
+      "sha256": "016866478229e760e31cc5f9176b21cc94f9b9602c165dfdb26f409a12a7da15",
+      "sentra": 14.1,
+      "ember": 0.0003732701078160369
+    },
+    {
+      "name": "umdmxfrm.dll",
+      "sha256": "01907fa3b9ab6dababdb0b9e1315f46faacf5d9e47154f8aa0391568feb27a9b",
+      "sentra": 13.0,
+      "ember": 0.027402453479210078
+    },
+    {
+      "name": "tcblaunch.exe",
+      "sha256": "0195b18a5f5db86d6bba9b8585c1383ff36c5b08792a6a612762e6024f71156c",
+      "sentra": 12.0,
+      "ember": 0.005723073827860625
+    },
+    {
+      "name": "sqmapi.dll",
+      "sha256": "01a359de1bb23ea201d46f0d99d4e64e56d6d8ad31ec2ba30d0382aaa252594a",
+      "sentra": 12.6,
+      "ember": 9.653077139827272e-05
+    },
+    {
+      "name": "packager.dll",
+      "sha256": "01c63076abccb8e109b32e098f7816a3b44f14564bf9e807ccff576f9007c4ae",
+      "sentra": 14.5,
+      "ember": 0.0005510387088252699
+    },
+    {
+      "name": "SimCfg.dll",
+      "sha256": "01e19729704d86213ef303cfbbb245642e5ab76d0610e2a8388539cac36843f6",
+      "sentra": 12.8,
+      "ember": 0.0001565907277542412
+    },
+    {
+      "name": "SSShim.dll",
+      "sha256": "01eae99d77caba2e738575a400e035083ca87d920d1570c900a7c34c189a0eff",
+      "sentra": 17.4,
+      "ember": 0.0015164970543621507
+    },
+    {
+      "name": "Windows.Media.Streaming.ps.dll",
+      "sha256": "0202b6310605665ff2d27cfae2c9afe240ccb8cc4e22504bc40773b18d1ea982",
+      "sentra": 15.4,
+      "ember": 0.0005725733114359204
+    },
+    {
+      "name": "AppxAllUserStore.dll",
+      "sha256": "021e798923ced57524dfb360c02eec14be734c9ad3df13dc25eff56a5ad6d35a",
+      "sentra": 14.6,
+      "ember": 0.0001352741526745339
+    },
+    {
+      "name": "tpmcompc.dll",
+      "sha256": "022860b59728383710ac491f4a4444f5e69f16b9998d2b50e8eaf52fc2feec04",
+      "sentra": 13.0,
+      "ember": 0.003827732460903938
+    },
+    {
+      "name": "kdusb.dll",
+      "sha256": "023a771b4bd0a03d5d009456a886ea5f7993293de8026bdd280f705433d06af3",
+      "sentra": 14.3,
+      "ember": 0.00097945188057566
+    },
+    {
+      "name": "RpcPing.exe",
+      "sha256": "0244aa8269c39e74663920ca738fec27bde0a1bb6667feb24299903864337f12",
+      "sentra": 15.6,
+      "ember": 0.01572372192710893
+    },
+    {
+      "name": "icsigd.dll",
+      "sha256": "025331892107ca4125a90c3ae9e6b137aadb0d17bf69266d0fb6dff7cb26810a",
+      "sentra": 12.0,
+      "ember": 0.002075326378755246
+    },
+    {
+      "name": "RotMgr.dll",
+      "sha256": "0253ce44eca53ab833f97d07697ecaf38dd437e1911637468c9b990ec7910f9c",
+      "sentra": 15.1,
+      "ember": 0.00026874542347989024
+    },
+    {
+      "name": "IsoSessionCore.dll",
+      "sha256": "02739751d12e89c99cf7dccfd59edb3112a49956ff72aee76f250cd5a887f228",
+      "sentra": 15.1,
+      "ember": 0.0009901166379632513
+    },
+    {
+      "name": "mshtmler.dll",
+      "sha256": "0273aea7f73148b303e7b9230c26e82ca632353de99c009485b992eeabec4b3f",
+      "sentra": 16.5,
+      "ember": 4.966110621944043e-05
+    },
+    {
+      "name": "IEProxyDesktop.dll",
+      "sha256": "02a4aae4395b1d2ed44971cf57bd37cb6303bd85f0f7b26e28ad41af24167016",
+      "sentra": 13.8,
+      "ember": 0.0005047069192628068
+    },
+    {
+      "name": "SystemPropertiesHardware.exe",
+      "sha256": "02bd4dea03c4cc533e97d6cbbd4f95de60ff5fd6bcdc83230e840007b8a56694",
+      "sentra": 15.6,
+      "ember": 0.018724003476367983
+    },
+    {
+      "name": "ProvPluginEng.dll",
+      "sha256": "02bd7ca710368d66e467e33822a7f8c2a1844e9ccc8ef57140cbe45a750eda6f",
+      "sentra": 12.8,
+      "ember": 0.00015871602385735117
+    },
+    {
+      "name": "fmapi.dll",
+      "sha256": "02cf6bb117203601b771488c1bd554008d06d31891cf5f159542e6bec45ac6f0",
+      "sentra": 14.1,
+      "ember": 0.0033417971478481145
+    },
+    {
+      "name": "Windows.UI.CredDialogController.dll",
+      "sha256": "02e95ec9654f3705119ec0f80f7ff0dd1d0fc5e69068a4259ffae2d51e917d2f",
+      "sentra": 15.7,
+      "ember": 0.0001934626111270218
+    },
+    {
+      "name": "sensrsvc.dll",
+      "sha256": "0303fb5a06ab9e32f80328d5e18a51ca8a0be921af455ef453627aefbe002c99",
+      "sentra": 17.1,
+      "ember": 0.0020355912613800853
+    },
+    {
+      "name": "d3dx10.dll",
+      "sha256": "03115a37f75fffb7abf07a59ec6ecb5217d3479bc95f92846c7e9b91822a0567",
+      "sentra": 1.7,
+      "ember": 0.03651667917469979
+    },
+    {
+      "name": "migisol.dll",
+      "sha256": "031cf01ec855155873b6d49dacb0d7f50dd2d45c03aef7527e865cf15327d8ee",
+      "sentra": 13.8,
+      "ember": 5.793863005067092e-05
+    },
+    {
+      "name": "SettingsHandlers_SharedExperiences_Rome.dll",
+      "sha256": "0324b4717faf4dca8538b1952ea8a5794e82dacde56fed45e475b436aee66f10",
+      "sentra": 13.8,
+      "ember": 0.00012630356718674663
+    },
+    {
+      "name": "httpprxm.dll",
+      "sha256": "0326def7875ac789dc58eeffec5a97c5db6c120b7dcf295df3c9316a70d67c7f",
+      "sentra": 13.6,
+      "ember": 0.0002858155709083348
+    },
+    {
+      "name": "vbssysprep.dll",
+      "sha256": "034501051c88f933f990a42229275402a0dacf1fc43beda79fcdec394420d51a",
+      "sentra": 12.8,
+      "ember": 0.00015121745866997568
+    },
+    {
+      "name": "KBDSOREX.DLL",
+      "sha256": "0362a458e0ca8b941634e558d62d781da225f398a27c6832592f515ac54e9da5",
+      "sentra": 12.7,
+      "ember": 0.0004985573287587152
+    },
+    {
+      "name": "ttdrecord.dll",
+      "sha256": "037a7e1e499bb0e2b0d1d88054f3b3ca210c0ed504c93d726dce960324818197",
+      "sentra": 19.5,
+      "ember": 0.001306801412802171
+    },
+    {
+      "name": "bash.exe",
+      "sha256": "03da25ca4f062e8fcebfb55b76fb6fe27f76e9f058dfea5889673777528db505",
+      "sentra": 15.6,
+      "ember": 0.0006923126307382325
+    },
+    {
+      "name": "Windows.Internal.SecurityMitigationsBroker.dll",
+      "sha256": "03f9495b4e5dccae9904eec100c370ca4d09cfd735995ea2a35fab0f34462e81",
+      "sentra": 13.8,
+      "ember": 0.0003701065019179818
+    },
+    {
+      "name": "prevhost.exe",
+      "sha256": "0402afd1e3231da4841a093040f861b1af321f3dd6740c879de9d1e3d600d95e",
+      "sentra": 15.6,
+      "ember": 0.002179756699230639
+    },
+    {
+      "name": "getmac.exe",
+      "sha256": "040394fd122067368c10cd5771fc662ca4454c21817569abb7402d218f480663",
+      "sentra": 14.6,
+      "ember": 0.0004318132131661016
+    },
+    {
+      "name": "Windows.ApplicationModel.Background.SystemEventsBroker.dll",
+      "sha256": "0405953e575748fe8ee2d14f47954b96351a47ec5e018b360f3099e2ce406ed9",
+      "sentra": 12.8,
+      "ember": 0.00015988757431204567
+    },
+    {
+      "name": "rdpcredentialprovider.dll",
+      "sha256": "040e05cc0f22c0948b739ee7d062905cefee45e681376d369e699e0bd92beff4",
+      "sentra": 13.8,
+      "ember": 0.0003661758255794372
+    },
+    {
+      "name": "wmcodecdspps.dll",
+      "sha256": "043977634c96e00db5468bf94fc22a450c4d0333d133f3a67f12594e7cdb0e01",
+      "sentra": 12.6,
+      "ember": 0.0006664487690460466
+    },
+    {
+      "name": "lsmproxy.dll",
+      "sha256": "043e9972f7d194ab36c6ce54329f7ca16970445a746a60e27efdf913bb1ac821",
+      "sentra": 15.5,
+      "ember": 0.00011743955230565234
+    },
+    {
+      "name": "POSyncServices.dll",
+      "sha256": "04629c3a93ff40e00cf2445d102f64c0cf628dd369a566de9c71635485cde6f2",
+      "sentra": 12.8,
+      "ember": 0.00032025440229772385
+    },
+    {
+      "name": "declaredconfiguration.dll",
+      "sha256": "04648204109df4fc9e81903e98e5e0054a09ba93122c0d04acb436c54f94d67b",
+      "sentra": 15.1,
+      "ember": 0.0005482046453247974
+    },
+    {
+      "name": "sxproxy.dll",
+      "sha256": "046c23a69af9955fad98f4af8bdde7df52c21d831e96b30d60b85e076a6841bd",
+      "sentra": 15.5,
+      "ember": 0.0005761590912240202
+    },
+    {
+      "name": "pstorec.dll",
+      "sha256": "048001ebf0c8e0a39f6da07f196b0ab33dfbe12cf6b01294381b5dfe2f072c13",
+      "sentra": 12.3,
+      "ember": 0.0022926719815693714
+    },
+    {
+      "name": "sbresources.dll",
+      "sha256": "04861fb328515c6127d40a350de1979e58b114e87bda618a32a2df2eb12103f7",
+      "sentra": 16.0,
+      "ember": 0.0006759760761555464
+    },
+    {
+      "name": "ntasn1.dll",
+      "sha256": "04a37b3d847944b0086c330195d3ffa84c6178125684740254d4a964551977e5",
+      "sentra": 17.5,
+      "ember": 0.00027679732266501375
+    },
+    {
+      "name": "Storprop.dll",
+      "sha256": "04b2a67ae969f68395ab330294400514ef91af7fe53453179a67bdc06c1c68b1",
+      "sentra": 14.5,
+      "ember": 0.0018383191504948828
+    }
+  ]
+}
