@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from app import Handler, ThreadingHTTPServer
-from service import TABLE, connect
+from service import connect, dispatch_once, initialize, lookup, run_scan
 
 
 class ScannerAPI(unittest.TestCase):
@@ -23,8 +23,7 @@ class ScannerAPI(unittest.TestCase):
         local = patch('service.DISTRIBUTED', False)
         local.start()
         self.addCleanup(local.stop)
-        with closing(connect()) as db, db:
-            db.execute(TABLE)
+        initialize()
         self.server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
         threading.Thread(target=self.server.serve_forever, daemon=True).start()
         self.addCleanup(self.server.server_close)
@@ -36,9 +35,19 @@ class ScannerAPI(unittest.TestCase):
             response = client.getresponse()
             return response.status, json.load(response)
 
+    def finish(self, status, job):
+        self.assertEqual(status, 202)
+        self.assertEqual(job['status'], 'queued')
+        self.assertEqual(self.request('GET', '/api/scans/'+job['id']), (200, job))
+        self.assertTrue(dispatch_once())
+        response, report = self.request('GET', '/api/scans/'+job['id'])
+        self.assertEqual((response, report['status']), (200, 'done'))
+        self.assertEqual(run_scan(job['id']), report)
+        return report
+
     def test_url_round_trip(self):
         status, report = self.request('POST', '/api/scans/url', '{"url":"https://example.org/?token=secret"}')
-        self.assertEqual(status, 201)
+        report = self.finish(status, report)
         self.assertEqual(report['name'], 'example.org')
         self.assertEqual(report['model_version'], 'v2')
         self.assertIn('Оценка по фрагментам адреса', report['features'])
@@ -60,7 +69,7 @@ class ScannerAPI(unittest.TestCase):
         struct.pack_into('<H', fixture, 150, 0x0102)
         struct.pack_into('<I', fixture, 184, 4096)
         status, report = self.request('POST', '/api/scans/file', fixture, 'application/octet-stream')
-        self.assertEqual(status, 201)
+        report = self.finish(status, report)
         self.assertEqual(report['features']['NumberOfSections'], 2)
         self.assertEqual(report['features']['Characteristics'], 0x0102)
         self.assertEqual(report['features']['SectionAlignment'], 4096)
@@ -69,7 +78,9 @@ class ScannerAPI(unittest.TestCase):
     def test_brand_profile(self):
         status, report = self.request('POST', '/api/scans/url', json.dumps({
             'url': 'https://paypal.example.co.uk/google/?token=secret', 'profile': 'brand'}))
-        self.assertEqual(status, 201)
+        report = self.finish(status, report)
+        self.assertEqual(report['observations']['Поддомен'], 'paypal')
+        self.assertEqual(report['observations']['Регистрируемый домен'], 'example.co.uk')
         self.assertEqual(report['kind'], 'url')
         self.assertEqual(report['model_version'], 'url-brand-v1')
         self.assertEqual(report['features']['Бренды в поддомене'], 1)
@@ -85,6 +96,31 @@ class ScannerAPI(unittest.TestCase):
             self.assertEqual(self.request('POST', '/api/scans/url', payload)[0], 400)
         self.assertEqual(self.request('POST', '/api/scans/file', b'MZ', 'application/octet-stream')[0], 400)
         self.assertEqual(self.request('GET', '/api/scans')[1], [])
+
+    def test_queued_job_survives_restart_and_failure_is_visible(self):
+        _, job = self.request('POST','/api/scans/url','{"url":"example.org"}')
+        initialize()
+        def fail(*args):
+            self.assertEqual(lookup(job['id'])['status'], 'running')
+            raise ValueError('internal detail')
+        with patch('service.classify', side_effect=fail), self.assertLogs(level='ERROR'):
+            self.assertTrue(dispatch_once())
+        self.assertEqual(lookup(job['id'])['status'], 'failed')
+        self.assertNotIn('internal detail', str(lookup(job['id'])))
+        self.assertFalse(dispatch_once())
+
+    def test_legacy_report_and_missing_id(self):
+        old = {'id':'a'*32,'created':'2024','kind':'url','name':'paypal.example.org','level':'low','score':0}
+        with closing(connect()) as db, db:
+            db.execute('INSERT INTO scans VALUES (?,?,?)',(old['id'],old['created'],json.dumps(old)))
+        expected = dict(old,status='done',observations={'Регистрируемый домен':'example.org','Поддомен':'paypal'})
+        self.assertEqual(self.request('GET','/api/scans/'+old['id'])[1], expected)
+        self.assertEqual(self.request('GET','/api/scans/'+'b'*32)[0], 404)
+
+    def test_mixed_model(self):
+        r = self.finish(*self.request('POST','/api/scans/url','{"url":"example.org","profile":"mixed"}'))
+        self.assertEqual(r['model_version'], 'mixed-v1')
+        self.assertIn('Бренды в пути',r['features'])
 
 
 if __name__ == '__main__':

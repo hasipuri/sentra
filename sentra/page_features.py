@@ -61,6 +61,26 @@ def brand_features(address):
     return [sum(b in text for b in BRANDS) for text in (label, sub, path)] + [int(label in BRANDS)]
 
 
+def host_observations(host):
+    domain, _, subdomain = host_parts(host)
+    try:
+        ipaddress.ip_address(domain)
+        host_fact = ('Адрес узла (IP)', domain)
+    except ValueError:
+        host_fact = ('Имя хоста' if domain in suffix_rules() else 'Регистрируемый домен', domain)
+    facts = dict([host_fact])
+    if subdomain:
+        facts['Поддомен'] = subdomain
+    return facts
+
+
+def url_observations(address):
+    parts = split_address(address)
+    facts = host_observations(parts.hostname)
+    facts['Протокол'] = parts.scheme.upper()
+    return facts
+
+
 class FormParser(HTMLParser):
     def __init__(self):
         super().__init__()

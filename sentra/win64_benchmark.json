@@ -1,0 +1,76 @@
+{
+  "weeks": [
+    "2024-09-22_2024-09-28_Win64_test.jsonl",
+    "2024-09-29_2024-10-05_Win64_test.jsonl",
+    "2024-10-06_2024-10-12_Win64_test.jsonl",
+    "2024-10-13_2024-10-19_Win64_test.jsonl",
+    "2024-10-20_2024-10-26_Win64_test.jsonl",
+    "2024-10-27_2024-11-02_Win64_test.jsonl",
+    "2024-11-03_2024-11-09_Win64_test.jsonl",
+    "2024-11-10_2024-11-16_Win64_test.jsonl",
+    "2024-11-17_2024-11-23_Win64_test.jsonl",
+    "2024-11-24_2024-11-30_Win64_test.jsonl",
+    "2024-12-01_2024-12-07_Win64_test.jsonl",
+    "2024-12-08_2024-12-14_Win64_test.jsonl"
+  ],
+  "calibration_rows": 709,
+  "test_rows": 757,
+  "excluded_headers": 0,
+  "sample": "first SHA-256 byte < 2",
+  "validation_fpr_budget": 0.05,
+  "sentra": {
+    "threshold": 41.60000000000001,
+    "validation": {
+      "positive": 254,
+      "negative": 455,
+      "tp_range": [
+        16,
+        45
+      ],
+      "fp_range": [
+        9,
+        21
+      ]
+    },
+    "test": {
+      "positive": 243,
+      "negative": 514,
+      "tp_range": [
+        19,
+        22
+      ],
+      "fp_range": [
+        10,
+        17
+      ]
+    }
+  },
+  "ember": {
+    "threshold": 0.06853786314431944,
+    "validation": {
+      "positive": 254,
+      "negative": 455,
+      "tp_range": [
+        253,
+        253
+      ],
+      "fp_range": [
+        22,
+        22
+      ]
+    },
+    "test": {
+      "positive": 243,
+      "negative": 514,
+      "tp_range": [
+        243,
+        243
+      ],
+      "fp_range": [
+        33,
+        33
+      ]
+    }
+  },
+  "archive": "Win64_test.zip"
+}

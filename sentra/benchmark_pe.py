@@ -6,6 +6,7 @@ The manifest must contain paths to files whose signatures were checked beforehan
 import argparse
 import hashlib
 import json
+import re
 import zipfile
 from pathlib import Path
 
@@ -13,7 +14,7 @@ import lightgbm as lgb
 import numpy as np
 import pefile
 
-from detector import classify, models, pe_features
+from detector import ROOT, classify, models, pe_features
 
 
 def header_ranges(raw):
@@ -48,7 +49,7 @@ def tree_bounds(node, ranges):
     return min(a[0], b[0]), max(a[1], b[1])
 
 
-def labeled(archive, extractor, model):
+def labeled(archive, extractor, model, sample_bytes=24):
     trees = models()['file']['trees']
     partitions = [[], []]
     seen = set()
@@ -59,9 +60,12 @@ def labeled(archive, extractor, model):
             vectors, rows = [], []
             with z.open(name) as stream:
                 for line in stream:
+                    prefix = re.search(rb'"sha256"\s*:\s*"([a-f0-9]{2})', line[:2048])
+                    if prefix and int(prefix[1], 16) >= sample_bytes:
+                        continue
                     row = json.loads(line)
                     sha = row['sha256']
-                    if int(sha[:2], 16) >= 24 or sha in seen or row['label'] not in (0, 1):
+                    if int(sha[:2], 16) >= sample_bytes or sha in seen or row['label'] not in (0, 1):
                         continue
                     seen.add(sha)
                     header = row.get('header') or {}
@@ -77,7 +81,7 @@ def labeled(archive, extractor, model):
             partitions[int(week >= len(weeks)//2)].extend([*row, p] for row, p in zip(rows, predictions))
     val, test = map(np.array, partitions)
     result = dict(weeks=weeks, calibration_rows=len(val), test_rows=len(test), excluded_headers=skipped,
-                  sample='first SHA-256 byte < 24', validation_fpr_budget=.05)
+                  sample=f'first SHA-256 byte < {sample_bytes}', validation_fpr_budget=.05)
     for name, low, high in [('sentra', 1, 2), ('ember', 3, 3)]:
         neg = np.sort(val[val[:, 0] == 0, high])[::-1]
         threshold = float(np.nextafter(neg[int(len(neg)*.05)], np.inf))
@@ -91,17 +95,42 @@ def labeled(archive, extractor, model):
     return result
 
 
-def main(args):
+def load_ember(extractor_path, model_path):
     # The upstream module uses modern type annotations; defer them on Python 3.9.
-    namespace = {'__file__': str(args.extractor), '__name__': 'ember_features'}
-    source = 'from __future__ import annotations\n' + args.extractor.read_text(encoding='utf-8')
-    exec(compile(source, str(args.extractor), 'exec'), namespace)
+    namespace = {'__file__': str(extractor_path), '__name__': 'ember_features'}
+    source = 'from __future__ import annotations\n' + extractor_path.read_text(encoding='utf-8')
+    exec(compile(source, str(extractor_path), 'exec'), namespace)
     extractor = namespace['PEFeatureExtractor']()
-    model = lgb.Booster(model_file=str(args.model))
+    model = lgb.Booster(model_file=str(model_path))
     if model.num_feature() != extractor.dim:
         raise ValueError('The EMBER model and extractor dimensions differ.')
+    return extractor, model
+
+
+def main(args):
+    extractor, model = load_ember(args.extractor, args.model)
+    if args.file:
+        with args.file.open('rb') as stream:
+            data = stream.read(10*1024*1024+1)
+        if len(data) > 10*1024*1024:
+            raise ValueError('Maximum file size is 10 MiB')
+        fast = classify('file', pe_features(data))
+        with pefile.PE(data=data, fast_load=True) as pe:
+            header = pe.OPTIONAL_HEADER
+            directories = header.DATA_DIRECTORY
+            managed = len(directories) > 14 and directories[14].VirtualAddress and directories[14].Size
+            cohort = 'dotnet' if managed else 'win64' if header.Magic == 523 else 'win32'
+        name = 'pe_labeled_benchmark.json' if cohort == 'dotnet' else cohort+'_benchmark.json'
+        cut = json.loads((ROOT/name).read_text(encoding='utf-8'))['ember']['threshold']
+        value = float(model.predict(extractor.feature_vector(data).reshape(1,-1), num_threads=1)[0])
+        report = dict(file=args.file.name, sha256=hashlib.sha256(data).hexdigest(), cohort=cohort,
+                      sentra={'score':fast['score'], 'level':fast['level']},
+                      ember=dict(score=value, threshold=cut, above_threshold=value>=cut))
+        args.output.write_text(json.dumps(report, indent=2), encoding='utf-8')
+        return
     if args.archive:
-        report = labeled(args.archive, extractor, model)
+        report = labeled(args.archive, extractor, model, args.sample_bytes)
+        report['archive'] = args.archive.name
         args.output.write_text(json.dumps(report, indent=2), encoding='utf-8')
         return
     items = []
@@ -131,4 +160,6 @@ if __name__ == '__main__':
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument('--archive', type=Path)
     source.add_argument('--manifest', type=Path)
+    source.add_argument('--file', type=Path, help='Score one local PE with both detectors')
+    parser.add_argument('--sample-bytes', type=int, choices=range(1,257), default=24, metavar='1..256')
     main(parser.parse_args())

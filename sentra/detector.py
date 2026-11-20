@@ -55,6 +55,10 @@ def scan_brand_features(address):
     return scan_url_features(address) + brand_features(address)
 
 
+def scan_mixed_features(address):
+    return url_features(address) + brand_features(address) + [lexical_score(address, models()['url_mixed']['lexical'])]
+
+
 def url_features(value):
     if not isinstance(value, str) or len(value) > 4096 or not value or re.search(r'[\s\\\x00-\x1f]', value):
         raise ValueError('Введите корректный HTTP(S)-адрес длиной до 4096 символов.')
@@ -107,6 +111,9 @@ def models():
     brand_path = ROOT / 'url_brand_model.json'
     if brand_path.exists():
         result['url_brand'] = json.loads(brand_path.read_text(encoding='utf-8'))
+    mixed_path = ROOT / 'url_mixed_model.json'
+    if mixed_path.exists():
+        result['url_mixed'] = json.loads(mixed_path.read_text(encoding='utf-8'))
     return result
 
 
@@ -126,6 +133,9 @@ def classify(kind, features):
     names = URL_FIELDS if kind == 'url' else PE_FIELDS
     if kind == 'url_brand':
         names = URL_FIELDS + ['Оценка по фрагментам адреса'] + BRAND_FIELDS
+    if kind == 'url_mixed':
+        names = URL_FIELDS + BRAND_FIELDS + ['Оценка по фрагментам адреса']
+        value = round((value + features[-1]) / 2, 1)
     if kind == 'url' and model.get('lexical'):
         value = round((value + features[len(URL_FIELDS)]) / 2, 1)
         names = URL_FIELDS + ['Оценка по фрагментам адреса']

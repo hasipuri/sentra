@@ -1,0 +1,238 @@
+{
+  "medians": {
+    "sentra": {
+      "ms": 0.20850000000000002,
+      "peak_rss_mib": 35.07
+    },
+    "ember": {
+      "ms": 83.2655,
+      "peak_rss_mib": 136.755
+    }
+  },
+  "files": [
+    {
+      "name": "whoami.exe",
+      "sha256": "23240ef9f8b0a9a324110b1c2331de31dc1b0e08f5359cb707e51a939af56cd3",
+      "bytes": 98304,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.422,
+        "peak_rss_mib": 35.08
+      },
+      "ember": {
+        "ms": 77.619,
+        "peak_rss_mib": 137.11
+      }
+    },
+    {
+      "name": "where.exe",
+      "sha256": "f51fab8041e5023d7290b540a2106f051ef0bd2bc3443c9daf318628b560fa29",
+      "bytes": 65536,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.178,
+        "peak_rss_mib": 35.07
+      },
+      "ember": {
+        "ms": 43.851,
+        "peak_rss_mib": 136.91
+      }
+    },
+    {
+      "name": "find.exe",
+      "sha256": "cf9cc5a552de280750b36743e80c33381e59d5ec8aa65a2dcfdd6a34198799bc",
+      "bytes": 40960,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.239,
+        "peak_rss_mib": 35.07
+      },
+      "ember": {
+        "ms": 27.658,
+        "peak_rss_mib": 136.41
+      }
+    },
+    {
+      "name": "cmd.exe",
+      "sha256": "ccd79a7568ea9240ccd6fe124807b9d3e4dbc3a4cf92954299ac3029f4a91d02",
+      "bytes": 339968,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.215,
+        "peak_rss_mib": 35.06
+      },
+      "ember": {
+        "ms": 195.764,
+        "peak_rss_mib": 136.48
+      }
+    },
+    {
+      "name": "reg.exe",
+      "sha256": "ef37663b44ac66920c6f33694deea01acb78ae3f3012884819373fa04c3eb5f0",
+      "bytes": 110592,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.2,
+        "peak_rss_mib": 35.05
+      },
+      "ember": {
+        "ms": 77.07,
+        "peak_rss_mib": 136.35
+      }
+    },
+    {
+      "name": "msiexec.exe",
+      "sha256": "1897eeeb5a299cd7fdd82142d0534122c9a034d2943f991d3f2077d69114fa09",
+      "bytes": 180224,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.166,
+        "peak_rss_mib": 35.13
+      },
+      "ember": {
+        "ms": 93.401,
+        "peak_rss_mib": 136.91
+      }
+    },
+    {
+      "name": "kernel32.dll",
+      "sha256": "970e5e15eed7d53c8b88e06ddc71884c31804f1cb5286abf01fbce39b7f0e29f",
+      "bytes": 862016,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.51,
+        "peak_rss_mib": 35.06
+      },
+      "ember": {
+        "ms": 568.408,
+        "peak_rss_mib": 144.47
+      }
+    },
+    {
+      "name": "user32.dll",
+      "sha256": "4f66c3c584276f7df0dbfb78332315990ef81276661c8eacd8ba93197931ff91",
+      "bytes": 2003968,
+      "architecture": "PE32+",
+      "sentra": {
+        "ms": 0.707,
+        "peak_rss_mib": 35.11
+      },
+      "ember": {
+        "ms": 753.897,
+        "peak_rss_mib": 157.42
+      }
+    },
+    {
+      "name": "whoami.exe",
+      "sha256": "bf803e9a7a7f4499c5b4e8b59756905de8a238c5aed3ad6c93665e047c473e01",
+      "bytes": 64000,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.202,
+        "peak_rss_mib": 34.95
+      },
+      "ember": {
+        "ms": 59.288,
+        "peak_rss_mib": 136.37
+      }
+    },
+    {
+      "name": "where.exe",
+      "sha256": "d5e5a1fe43f8f17f6bea29106f56e2311448d6d71c86a529bf1efd2aa783e5af",
+      "bytes": 34304,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.162,
+        "peak_rss_mib": 35.08
+      },
+      "ember": {
+        "ms": 33.342,
+        "peak_rss_mib": 136.43
+      }
+    },
+    {
+      "name": "find.exe",
+      "sha256": "74d5471785856875183c8c8a2aa4c9220731e8e15462f610287910b34f4a889c",
+      "bytes": 15360,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.171,
+        "peak_rss_mib": 35.04
+      },
+      "ember": {
+        "ms": 32.046,
+        "peak_rss_mib": 136.32
+      }
+    },
+    {
+      "name": "cmd.exe",
+      "sha256": "6f98ecdae2c174abab5bb0c58dc314a61eec531a0fa438b18e6d46f35ea65e29",
+      "bytes": 261120,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.229,
+        "peak_rss_mib": 35.05
+      },
+      "ember": {
+        "ms": 148.044,
+        "peak_rss_mib": 136.67
+      }
+    },
+    {
+      "name": "reg.exe",
+      "sha256": "91b607a875e9e2798adf4709d020e4694fa01a89c52ada9b2aa828c477c37a6b",
+      "bytes": 64512,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.155,
+        "peak_rss_mib": 35.09
+      },
+      "ember": {
+        "ms": 55.303,
+        "peak_rss_mib": 136.84
+      }
+    },
+    {
+      "name": "msiexec.exe",
+      "sha256": "898543ec2ed5b84f86fe3c1b3d50f38b6822983115185ddd744da030495cffdc",
+      "bytes": 145920,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.194,
+        "peak_rss_mib": 34.99
+      },
+      "ember": {
+        "ms": 88.912,
+        "peak_rss_mib": 136.48
+      }
+    },
+    {
+      "name": "kernel32.dll",
+      "sha256": "fc243c1c0aeb92176d5fa5cf1a8c13f42ebd4a7ca91a7bb3bc18bf4e17eb43e1",
+      "bytes": 707728,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.41,
+        "peak_rss_mib": 35.09
+      },
+      "ember": {
+        "ms": 587.136,
+        "peak_rss_mib": 142.58
+      }
+    },
+    {
+      "name": "user32.dll",
+      "sha256": "009912a61639dcaf593dcc99f97796df84adc5fb877461fa7d643d6afc9a0fb0",
+      "bytes": 2050600,
+      "architecture": "PE32",
+      "sentra": {
+        "ms": 0.721,
+        "peak_rss_mib": 35.08
+      },
+      "ember": {
+        "ms": 792.85,
+        "peak_rss_mib": 162.19
+      }
+    }
+  ]
+}

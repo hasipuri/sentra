@@ -15,6 +15,9 @@ document.querySelectorAll('[data-icon]').forEach(el => {
 });
 const el = (tag, text, cls) => { const n = document.createElement(tag); if(text !== undefined)n.textContent=text; if(cls)n.className=cls; return n; };
 const levels = {low:'Низкий риск', medium:'Средний риск', high:'Высокий риск'};
+const states = {queued:'В очереди', running:'Выполняется', done:'Готово', failed:'Ошибка'};
+const pending = row => row.status==='queued' || row.status==='running';
+let watched=null, watchTimer, historyTimer;
 let kind='url', busy=false;
 function select(k){
  kind=k; const url=k==='url'; $('urlBox').hidden=!url; $('fileBox').hidden=url;
@@ -26,6 +29,10 @@ function select(k){
   $('dataset').textContent='PhreshPhish';
   $('method').textContent='Случайный лес с признаками брендов';
  }
+ if(url && $('urlProfile').value==='mixed'){
+  $('dataset').textContent='GramBeddings, Ebbu2017, PhreshPhish';
+  $('method').textContent='Структура, бренды и фрагменты URL';
+ }
  $('note').textContent=url?'Анализируется структура URL без перехода на сайт.':'Анализируются заголовки PE без запуска файла.';
  $('error').textContent='';$('report').hidden=true;
 }
@@ -33,14 +40,24 @@ $('urlTab').onclick=()=>select('url'); $('fileTab').onclick=()=>select('file');
 $('urlProfile').onchange=()=>select('url');
 async function api(path,options){
  const response=await fetch(path,options);
- const data=await response.json(); if(!response.ok)throw Error(data.error || 'Ошибка сервера.');
+ const data=await response.json();
+ if(!response.ok){const err=Error(data.error || 'Ошибка сервера.');err.status=response.status;throw err;}
  return data;
 }
 function showReport(box,row){
- const explanation=row.model_version==='url-brand-v1'?'Модель учитывает фрагменты адреса и расположение названий брендов.':
-  (row.kind==='url'?'Учитывается только структура адреса.':'Учитываются только заголовки PE.');
- box.replaceChildren(el('h3',row.name),el('span',levels[row.level],'risk '+row.level),
- el('p','Оценка модели '+(row.model_version || 'v1')+': '+row.score+' из 100. '+explanation));
+ box.replaceChildren(el('h3',row.name));
+ if(pending(row) || row.status==='failed'){
+  box.append(el('strong',states[row.status]));
+  if(row.error)box.append(el('p',row.error));
+  return;
+ }
+ box.append(el('span',levels[row.level],'risk '+row.level),
+  el('p','Готово · '+row.score+' из 100 · модель '+(row.model_version || 'v1')));
+ if(row.observations){
+  const facts=el('dl',undefined,'detailgrid');
+  for(const [key,value] of Object.entries(row.observations))facts.append(el('dt',key),el('dd',value));
+  box.append(facts);
+ }
  const details=el('details'); details.append(el('summary','Признаки объекта'));
  const grid=el('dl',undefined,'detailgrid'); for(const [key,value] of Object.entries(row.features))grid.append(el('dt',key),el('dd',value));
  details.append(grid);box.append(details);
@@ -50,13 +67,33 @@ function list(box,rows){
  if(!rows.length){box.append(el('div','Проверок пока нет. Здесь появятся результаты анализа.','empty'));return;}
  for(const row of rows){
   const button=el('button',undefined,'record'), time=el('time',new Date(row.created).toLocaleString('ru-RU', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}));
-  button.append(el('span',row.kind==='url'?'URL':'PE','code'),el('strong',row.name),time,el('span',levels[row.level],'risk '+row.level));
-  button.onclick=()=>{showReport($('detail'),row);$('dialog').showModal();};box.append(button);
+  button.append(el('span',row.kind==='url'?'URL':'PE','code'),el('strong',row.name),time,el('span',levels[row.level] || states[row.status],'risk '+(row.level || '')));
+  button.onclick=()=>{showReport($('detail'),row);$('dialog').dataset.scanId=row.id;$('dialog').showModal();};box.append(button);
  }
 }
 async function refresh(){
- try{const rows=await api('/api/scans');list($('recent'),rows.slice(0,4));list($('all'),rows);}
- catch{for(const id of ['recent','all'])$(id).textContent='Не удалось загрузить журнал.';}
+ clearTimeout(historyTimer);
+ try{const rows=await api('/api/scans');list($('recent'),rows.slice(0,4));list($('all'),rows);
+  const detail=rows.find(r=>r.id===$('dialog').dataset.scanId);
+  if($('dialog').open && detail)showReport($('detail'),detail);
+  if(rows.some(pending))historyTimer=setTimeout(refresh,2000);
+ }catch{for(const id of ['recent','all'])$(id).textContent='Не удалось загрузить журнал.';historyTimer=setTimeout(refresh,5000);}
+}
+function watch(id){
+ clearTimeout(watchTimer);watched=id;sessionStorage.setItem('sentra.pending',id);
+ async function poll(){
+  try{
+   const row=await api('/api/scans/'+id);if(watched!==id)return;
+   $('error').textContent='';showReport($('report'),row);$('report').hidden=false;
+   if(!pending(row)){watched=null;sessionStorage.removeItem('sentra.pending');await refresh();return;}
+  }catch(e){
+   if(watched!==id)return;
+   $('error').textContent=e.message;
+   if(e.status===404){sessionStorage.removeItem('sentra.pending');watched=null;return;}
+  }
+  watchTimer=setTimeout(poll,1200);
+ }
+ poll();
 }
 $('close').onclick=()=>$('dialog').close();
 $('form').onsubmit=async event=>{
@@ -70,17 +107,49 @@ $('form').onsubmit=async event=>{
  try {
   const headers=url?{'Content-Type':'application/json'}:{'Content-Type':'application/octet-stream','X-File-Name':encodeURIComponent(file.name)};
   const row=await api('/api/scans/'+kind,{method:'POST',headers,body:url?JSON.stringify({url:address,profile:$('urlProfile').value}):file});
-  showReport($('report'),row);$('report').hidden=false;$('report').focus();await refresh();
+  showReport($('report'),row);$('report').hidden=false;$('report').focus();watch(row.id);await refresh();
  }catch(e){$('error').textContent=e.message;}
  finally{busy=false;for(const id of ['submit','urlTab','fileTab','urlProfile'])$(id).disabled=false;$('submit').children[1].textContent=url?'Проверить ссылку':'Проверить файл';}
 };
+function resultTable(caption, columns, rows){
+ const table=el('table');table.append(el('caption',caption));
+ const heading=table.createTHead().insertRow();
+ for(const name of columns){const th=el('th',name);th.scope='col';heading.append(th);}
+ const body=table.createTBody();
+ for(const values of rows){
+  const tr=body.insertRow();
+  for(const value of values)tr.insertCell().textContent=value;
+ }
+ return table;
+}
+function showBenchmarks(b){
+ const names={url:'Основная',url_brand:'Бренды в URL',url_mixed:'Смешанная'};
+ const fmt=n=>n.toLocaleString('ru-RU',{maximumFractionDigits:1});
+ const urlRows=Object.entries(b.url.arms).map(([k,arm])=>{
+  const {tp,fp,fn,tn}=arm.test;
+  return [names[k],fmt(arm.threshold),tp+' / '+(tp+fn),fmt(1000*fp/(fp+tn))];
+ });
+ const fileRows=[];
+ const range=a=>a[0]===a[1]?a[0]:a.join('–');
+ for(const [arch,models] of Object.entries(b.files)){
+  for(const [engine,m] of Object.entries(models)){
+   fileRows.push([arch.toUpperCase(),engine==='ember'?'EMBER':'Sentra',range(m.tp_range)+' / '+m.positive,range(m.fp_range)+' / '+m.negative]);
+  }
+ }
+ $('benchmarkBody').replaceChildren(
+  el('p','Пороги подобраны на валидации с бюджетом '+b.url.budget_per_1000+' ложных тревог на 1 000 легитимных адресов. Тест охватывает '+fmt(b.url.test.rows)+' адресов за '+b.url.test.start+' — '+b.url.test.end+'.'),
+  resultTable('Фишинговые адреса', ['Модель','Порог','Найдено угроз','Ложных на 1 000'],urlRows),
+  resultTable('Исполняемые файлы', ['Набор','Модель','Найдено угроз','Тревог среди легитимных'],fileRows),
+  el('p','Диапазоны учитывают поля PE-заголовка, отсутствующие в наборе. Бюджет ложных тревог на валидации — 5%.'),
+  el('p','Медианы на '+b.cost_files+' подписанных файлах Windows. Sentra — '+b.cost.sentra.ms.toLocaleString('ru-RU',{maximumFractionDigits:2})+' мс и '+fmt(b.cost.sentra.peak_rss_mib)+' МиБ пиковой памяти процесса. EMBER — '+fmt(b.cost.ember.ms)+' мс и '+fmt(b.cost.ember.peak_rss_mib)+' МиБ.'));
+}
 async function route(){
  const view=['history','models'].includes(location.hash.slice(1))?location.hash.slice(1):'scanner';
  document.querySelectorAll('.view').forEach(n=>n.hidden=n.id!==view);
  document.querySelectorAll('nav a').forEach(n=>{if(n.hash==='#'+view)n.setAttribute('aria-current','page');else n.removeAttribute('aria-current');});
  if(view==='models'){
-  try{const data=await api('/api/models');$('metrics').replaceChildren();
-   const titles={url:'Ссылки · GramBeddings',url_brand:'Бренды в URL · PhreshPhish',file:'Файлы · ClaMP'};
+  try{const [data,bench]=await Promise.all([api('/api/models'),api('/api/benchmarks')]);$('metrics').replaceChildren();showBenchmarks(bench);
+   const titles={url:'Ссылки · GramBeddings',url_brand:'Бренды в URL · PhreshPhish',url_mixed:'Смешанная модель · поздний тест',file:'Файлы · ClaMP'};
    for(const k of Object.keys(titles)){const m=data[k],card=el('article');
     card.append(el('h3',titles[k]),el('p','Обучение: '+m.train.toLocaleString('ru-RU')+' · Тест: '+m.test.toLocaleString('ru-RU')),
     el('p','Полнота: '+(100*m.tp/(m.tp+m.fn)).toFixed(1)+'% · Точность (precision): '+(100*m.tp/(m.tp+m.fp)).toFixed(1)+'%'),
@@ -89,6 +158,8 @@ async function route(){
  }else await refresh();
 }
 window.addEventListener('hashchange',route);route();
+const saved=sessionStorage.getItem('sentra.pending');
+if(saved && /^[0-9a-f]{32}$/.test(saved))watch(saved);
 
 // Draw a layered triangulated shield using concentric contours of its silhouette.
 function drawShield(){
